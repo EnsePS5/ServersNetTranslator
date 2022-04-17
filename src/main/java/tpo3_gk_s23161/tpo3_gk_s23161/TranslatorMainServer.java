@@ -6,14 +6,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class TranslatorMainServer {
 
     private static final int SERVER_PORT = 9999;
-    ArrayList<String> languageList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
 
@@ -26,22 +26,30 @@ public class TranslatorMainServer {
 
             threadPool.submit(() -> {
 
+                Map<String, Integer> languageMap = new HashMap<>();
+
                 try {
 
-                    PrintWriter outCommand = new PrintWriter(connectionSocket.getOutputStream(),true);
                     BufferedReader comingCommand = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
+                    String line;
                     String command = comingCommand.readLine();
 
                     switch (command){
-
                         case "TRANSLATE":
 
                             break;
-                        case "ADD_TO_LIST":
-                            String line;
-                            while ((line = comingCommand.readLine()) != null) {
+                        case "TRANSLATED":
+                            while ((line = comingCommand.readLine()) != null){
                                 System.out.println(line);
+                            }
+                            break;
+                        case "ADD_TO_LIST":
+                            String line1;
+                            while ((line = comingCommand.readLine()) != null && (line1 = comingCommand.readLine()) != null) {
+                                languageMap.put(line,Integer.parseInt(line1));
+                                System.out.println(line);
+                                System.out.println(line1);
                             }
                             break;
                     }

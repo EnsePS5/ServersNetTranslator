@@ -5,7 +5,11 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class TPOAppController {
 
@@ -16,5 +20,29 @@ public class TPOAppController {
     @FXML
     private TextField textFieldToTranslate;
 
-    public ArrayList<String> language = new ArrayList<>();
+    private static final int serverPort = 9999;
+    private static final String serverIp = "localhost";
+
+    public void translate() throws IOException {
+
+        String toTranslate = textFieldToTranslate.getText();
+        textResultLabel.setText(sendToServer(toTranslate));
+
+    }
+    private static String sendToServer(String message) throws IOException {
+
+        Socket translationSocket = new Socket(serverIp,serverPort);
+
+        PrintWriter printWriter = new PrintWriter(translationSocket.getOutputStream(),true);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(translationSocket.getInputStream()));
+
+        printWriter.println("TRANSLATE\n" + "\\TODO ADD CORRECT LANGUAGE CODE" + message);
+
+        String result = bufferedReader.readLine();
+
+        translationSocket.close();
+        bufferedReader.close();
+
+        return result;
+    }
 }
