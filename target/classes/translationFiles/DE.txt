@@ -1,0 +1,3 @@
+dom:haus
+nieodkryty:unentdeckt
+mysz:maus
