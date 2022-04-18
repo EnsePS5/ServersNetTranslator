@@ -13,6 +13,7 @@ public class TPOApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(TPOApplication.class.getResource("TPOFX.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("TPO-Translator");
+        stage.setResizable(false);
         stage.setScene(scene);
 
         stage.show();

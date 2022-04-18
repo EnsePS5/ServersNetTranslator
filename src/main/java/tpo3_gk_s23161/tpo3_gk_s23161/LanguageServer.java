@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,10 +57,10 @@ public class LanguageServer {
                             String line = comingCommand.readLine();
 
                             if (dictionary.containsKey(line)) {
-                                String response = dictionary.get(line);
+                                String response = dictionary.get(line).toUpperCase(Locale.ROOT);
                                 sendMessage(response,connectionSocket);
                             }else
-                                throw new Exception("Words is not found in dictionary");
+                                sendMessage("WORLD NOT FOUND",connectionSocket);
 
                             break;
                     }

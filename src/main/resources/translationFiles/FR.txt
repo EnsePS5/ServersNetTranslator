@@ -1,0 +1,3 @@
+dom:maison
+nieodkryty:non découvert
+mysz:souris

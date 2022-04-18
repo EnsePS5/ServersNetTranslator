@@ -34,7 +34,6 @@ public class TPOAppController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         try {
-
             String[] availableLanguages = sendToServer("", "GET_LANGUAGES").split(":");
             chooseLanguageBox.getItems().addAll(availableLanguages);
 

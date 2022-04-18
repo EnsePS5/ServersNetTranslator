@@ -46,7 +46,7 @@ public class TranslatorMainServer {
 
                             StringBuilder response = new StringBuilder();
                             for (String mapKey : mapKeys)
-                                response.append(mapKey).append("\n");
+                                response.append(mapKey).append(":");
 
                             sendMessage(response.toString(),connectionSocket);
                             break;
