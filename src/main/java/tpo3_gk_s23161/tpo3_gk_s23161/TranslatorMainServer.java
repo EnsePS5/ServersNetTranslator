@@ -14,22 +14,23 @@ import java.util.concurrent.Executors;
 
 public class TranslatorMainServer {
 
+    //server's port
     private static final int SERVER_PORT = 9999;
-
 
     public static void main(String[] args) throws IOException {
 
+        //server's variables
         Map<String, Integer> languageMap = new HashMap<>();
         ArrayList<String> mapKeys = new ArrayList<>();
         ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
 
+        //server runs endlessly in purpose (task requirement)
         while (true){
 
             ExecutorService threadPool = Executors.newFixedThreadPool(20);
             Socket connectionSocket = serverSocket.accept();
 
-            final int clientPort = connectionSocket.getLocalPort();
-
+            //submits to threadPool
             threadPool.submit(() -> {
 
                 try {
@@ -39,6 +40,7 @@ public class TranslatorMainServer {
                     String line;
                     String command = comingCommand.readLine();
 
+                    //Depending on first line that was sent to server, switches to correct case.
                     switch (command){
                         case "GET_LANGUAGES":
 
@@ -83,6 +85,7 @@ public class TranslatorMainServer {
             });
         }
     }
+    //sends message to given socket
     private static void sendMessage(String message,Socket socket) throws IOException {
 
         PrintWriter sendingMes = new PrintWriter(socket.getOutputStream(),true);
@@ -92,6 +95,7 @@ public class TranslatorMainServer {
         sendingMes.close();
     }
 
+    //sends message with command to given socket (LanguageServer usage only)
     private static void sendMessage(String message, String command, Socket socket) throws IOException {
 
         PrintWriter sendingMes = new PrintWriter(socket.getOutputStream(),true);

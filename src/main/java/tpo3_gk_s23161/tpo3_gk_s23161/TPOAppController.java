@@ -28,6 +28,8 @@ public class TPOAppController implements Initializable {
 
     private String currentLanguage;
 
+    //method that is being called before first use.
+    //sets up choiceBox
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -41,6 +43,7 @@ public class TPOAppController implements Initializable {
         }
     }
 
+    //happens after button being pressed. translates text in textField
     public void translate() throws IOException {
 
         currentLanguage = chooseLanguageBox.getValue();
@@ -50,6 +53,8 @@ public class TPOAppController implements Initializable {
 
     }
 
+    //sends message and command to main translation server
+    //returns translated world
     private String sendToServer(String message,String command) throws IOException {
 
         Socket translationSocket = new Socket(serverIp,serverPort);
@@ -59,17 +64,11 @@ public class TPOAppController implements Initializable {
 
         printWriter.println(command + "\n" + currentLanguage + "\n" + message);
 
-        StringBuilder result = new StringBuilder(bufferedReader.readLine());
-
-        String line;
-
-        while ((line = bufferedReader.readLine()) != null){
-            result.append(line).append(":");
-        }
+        String result = bufferedReader.readLine();
 
         translationSocket.close();
         bufferedReader.close();
 
-        return result.toString();
+        return result;
     }
 }

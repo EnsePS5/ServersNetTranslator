@@ -10,12 +10,14 @@ import java.util.concurrent.Executors;
 
 public class LanguageServer {
 
+    //languageServer's variables
     private static int serverPort = 0;
     private static int languageServerPort = 0;
     private static Map<String,String> dictionary = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
 
+        //read given arguments during server launch
         String languageCode = "";
         String fileWithTranslations = "";
 
@@ -27,16 +29,19 @@ public class LanguageServer {
                 case "--translationFilePath", "-tfp" -> fileWithTranslations = args[++i];
             }
         }
+        //makes server visible to main server
         dictionary = fileReadAndPackToMap(fileWithTranslations);
         sendMessage("ADD_TO_LIST\n" + languageCode + "\n" + languageServerPort);
 
         ServerSocket languageServerSocket = new ServerSocket(languageServerPort);
 
+        //server runs endlessly in purpose (task requirement)
         while (true){
 
             ExecutorService threadPool = Executors.newFixedThreadPool(20);
             Socket connectionSocket = languageServerSocket.accept();
 
+            //submits to threadPool
             threadPool.submit(() -> {
 
                 try {
@@ -45,6 +50,7 @@ public class LanguageServer {
 
                     String command = comingCommand.readLine();
 
+                    //used switch in order to make new command cases implementation easier
                     switch (command){
                         case "TRANSLATE":
                             String line = comingCommand.readLine();
@@ -65,6 +71,7 @@ public class LanguageServer {
         }
 
     }
+    //sends message to given socket
     private static void sendMessage(String message,Socket socket) throws IOException {
 
         PrintWriter sendingMes = new PrintWriter(socket.getOutputStream());
@@ -73,6 +80,7 @@ public class LanguageServer {
 
         sendingMes.close();
     }
+    //sends first message to main server to make it visible to client
     private static void sendMessage(String message) throws IOException {
 
         Socket sendingSocket = new Socket("localhost",serverPort);
@@ -83,6 +91,7 @@ public class LanguageServer {
         sendingMes.close();
         sendingSocket.close();
     }
+    //reads record from a file and packs it into map
     private static Map<String,String> fileReadAndPackToMap(String filePath) throws IOException {
 
         Map<String,String> result = new HashMap<>();
