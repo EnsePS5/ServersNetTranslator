@@ -12,7 +12,7 @@ public class LanguageServer {
 
     private static int serverPort = 0;
     private static int languageServerPort = 0;
-    private static Map<String,String> dictionary;
+    private static Map<String,String> dictionary = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
 
@@ -47,19 +47,31 @@ public class LanguageServer {
 
                     switch (command){
                         case "TRANSLATE":
+                            String line = comingCommand.readLine();
 
-                            String response = dictionary.get(comingCommand.readLine());
-                            sendMessage("TRANSLATED\n" + response);
+                            if (dictionary.containsKey(line)) {
+                                String response = dictionary.get(line);
+                                sendMessage(response,connectionSocket);
+                            }else
+                                throw new Exception("Words is not found in dictionary");
 
                             break;
                     }
 
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
         }
 
+    }
+    private static void sendMessage(String message,Socket socket) throws IOException {
+
+        PrintWriter sendingMes = new PrintWriter(socket.getOutputStream());
+
+        sendingMes.println(message);
+
+        sendingMes.close();
     }
     private static void sendMessage(String message) throws IOException {
 
