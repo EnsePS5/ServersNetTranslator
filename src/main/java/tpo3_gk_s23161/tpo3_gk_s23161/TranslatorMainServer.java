@@ -41,42 +41,37 @@ public class TranslatorMainServer {
                     String command = comingCommand.readLine();
 
                     //Depending on first line that was sent to server, switches to correct case.
-                    switch (command){
-                        case "GET_LANGUAGES":
-
+                    switch (command) {
+                        case "GET_LANGUAGES" -> {
                             StringBuilder response = new StringBuilder();
                             for (String mapKey : mapKeys)
                                 response.append(mapKey).append(":");
-
-                            sendMessage(response.toString(),connectionSocket);
-                            break;
-
-                        case "TRANSLATE":
-
+                            sendMessage(response.toString(), connectionSocket);
+                        }
+                        case "TRANSLATE" -> {
                             int portToTranslateFrom = languageMap.get(comingCommand.readLine());
-                            Socket translationSocket = new Socket("localhost",portToTranslateFrom);
+                            Socket translationSocket = new Socket("localhost", portToTranslateFrom);
                             BufferedReader translationBufferedReader =
                                     new BufferedReader(new InputStreamReader(translationSocket.getInputStream()));
-
-                            sendMessage(comingCommand.readLine(),"TRANSLATE",translationSocket);
-
-
+                            sendMessage(comingCommand.readLine(), "TRANSLATE", translationSocket);
                             line = translationBufferedReader.readLine();
-                            sendMessage(line,connectionSocket);
-
-                            break;
-
-                        case "ADD_TO_LIST":
-
+                            sendMessage(line, connectionSocket);
+                        }
+                        case "ADD_TO_LIST" -> {
                             String line1;
                             while ((line = comingCommand.readLine()) != null && (line1 = comingCommand.readLine()) != null) {
-                                mapKeys.add(line);
-                                languageMap.put(line,Integer.parseInt(line1));
+                                if (!mapKeys.contains(line)) {
+                                    mapKeys.add(line);
+                                    languageMap.put(line, Integer.parseInt(line1));
 
-                                System.out.println(line);
-                                System.out.println(line1);
+                                    System.out.println(line);
+                                    System.out.println(line1);
+                                } else {
+                                    Socket socket = new Socket("localhost",Integer.parseInt(line1));
+                                    sendMessage("TERMINATE",socket);
+                                }
                             }
-                            break;
+                        }
                     }
 
                 } catch (IOException e) {

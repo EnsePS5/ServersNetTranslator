@@ -52,17 +52,19 @@ public class LanguageServer {
                     String command = comingCommand.readLine();
 
                     //used switch in order to make new command cases implementation easier
-                    switch (command){
-                        case "TRANSLATE":
+                    switch (command) {
+                        case "TRANSLATE" -> {
                             String line = comingCommand.readLine();
-
                             if (dictionary.containsKey(line)) {
                                 String response = dictionary.get(line).toUpperCase(Locale.ROOT);
-                                sendMessage(response,connectionSocket);
-                            }else
-                                sendMessage("WORLD NOT FOUND",connectionSocket);
-
-                            break;
+                                sendMessage(response, connectionSocket);
+                            } else
+                                sendMessage("WORLD NOT FOUND", connectionSocket);
+                        }
+                        case "TERMINATE" -> {
+                            System.err.println("Given language is already being used!");
+                            System.exit(0);
+                        }
                     }
 
                 } catch (Exception e) {
