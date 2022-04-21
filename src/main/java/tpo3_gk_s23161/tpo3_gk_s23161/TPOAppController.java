@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -56,18 +57,35 @@ public class TPOAppController implements Initializable {
     //returns translated world
     private String sendToServer(String message,String command) throws IOException {
 
-        Socket translationSocket = new Socket(serverIp,serverPort);
+        try
+        {
+            Socket translationSocket = new Socket(serverIp, serverPort);
 
-        PrintWriter printWriter = new PrintWriter(translationSocket.getOutputStream(),true);
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(translationSocket.getInputStream()));
+            Thread.sleep(50);
 
-        printWriter.println(command + "\n" + currentLanguage + "\n" + message);
+            translationSocket.setSoTimeout(5);
 
-        String result = bufferedReader.readLine();
+            PrintWriter printWriter = new PrintWriter(translationSocket.getOutputStream(), true);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(translationSocket.getInputStream()));
 
-        translationSocket.close();
-        bufferedReader.close();
+            printWriter.println(command + "\n" + currentLanguage + "\n" + message);
 
-        return result;
+            String result = bufferedReader.readLine();
+
+            translationSocket.close();
+            bufferedReader.close();
+
+            return result;
+        }
+        catch (SocketTimeoutException | InterruptedException e)
+        {
+            chooseLanguageBox.getItems().clear();
+            chooseLanguageBox.getItems().addAll(sendToServer("","GET_LANGUAGES").split(":"));
+
+            if (currentLanguage != null)
+                return "The " + currentLanguage + " server is down";
+
+            return "Select language server";
+        }
     }
 }

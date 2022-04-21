@@ -60,6 +60,7 @@ public class LanguageServer {
                                 sendMessage(response, connectionSocket);
                             } else
                                 sendMessage("WORLD NOT FOUND", connectionSocket);
+
                         }
                         case "TERMINATE" -> {
                             System.err.println("Given language is already being used!");

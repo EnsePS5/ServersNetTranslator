@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,13 +50,25 @@ public class TranslatorMainServer {
                             sendMessage(response.toString(), connectionSocket);
                         }
                         case "TRANSLATE" -> {
-                            int portToTranslateFrom = languageMap.get(comingCommand.readLine());
-                            Socket translationSocket = new Socket("localhost", portToTranslateFrom);
-                            BufferedReader translationBufferedReader =
-                                    new BufferedReader(new InputStreamReader(translationSocket.getInputStream()));
-                            sendMessage(comingCommand.readLine(), "TRANSLATE", translationSocket);
-                            line = translationBufferedReader.readLine();
-                            sendMessage(line, connectionSocket);
+
+                            String serverLanguageKey = comingCommand.readLine();
+                            int portToTranslateFrom = languageMap.get(serverLanguageKey);
+
+                            try {
+                                Socket translationSocket = new Socket("localhost", portToTranslateFrom);
+                                translationSocket.setSoTimeout(5);
+
+                                BufferedReader translationBufferedReader =
+                                        new BufferedReader(new InputStreamReader(translationSocket.getInputStream()));
+                                sendMessage(comingCommand.readLine(), "TRANSLATE", translationSocket);
+                                line = translationBufferedReader.readLine();
+                                sendMessage(line, connectionSocket);
+                            }
+                            catch (SocketTimeoutException e)
+                            {
+                                sendMessage("SERVER " + serverLanguageKey + " IS DOWN",connectionSocket);
+                                languageMap.remove(serverLanguageKey);
+                            }
                         }
                         case "ADD_TO_LIST" -> {
                             String line1;
